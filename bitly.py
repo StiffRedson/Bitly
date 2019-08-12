@@ -1,20 +1,11 @@
-import requests
-import sys
-import os
-from dotenv import load_dotenv
-from urllib.parse import urlparse
 import argparse
+import os
+import sys
+from urllib.parse import urlparse
+import requests
+from dotenv import load_dotenv
 
-load_dotenv()
-secret_token = os.getenv("TOKEN")
-
-if secret_token is None:
-    print('[*]Sorry, something went wrong')
-    sys.exit()
-
-headers = {
-    "Authorization": f"Bearer {secret_token}"
-}
+path_token = os.path.abspath(os.path.dirname(__file__))
 
 
 def shorten_link(my_url):
@@ -52,20 +43,28 @@ def create_parser():
 
 if __name__ == '__main__':
 
+    load_dotenv(os.path.join(path_token, '.env'))
+    bitly_token = os.getenv("TOKEN")
+
+    if bitly_token is None:
+        print('[*]Sorry, something went wrong')
+        sys.exit()
+
+    headers = {
+        "Authorization": f"Bearer {bitly_token}"
+    }
+
     my_url = create_parser()
 
     try:
         response = requests.get(my_url)
         response.raise_for_status()
     except requests.exceptions.HTTPError as http_err:
-        print("[*] Http Error:", http_err)
-        exit(1)
+        exit(f'[*] Verify the link is correct\n {http_err}')
     except requests.exceptions.ConnectionError as connect_err:
-        print("[*] Error Connecting:", connect_err)
-        exit(1)
+        exit(f'[*] Verify the link is correct\n {connect_err}')
     except requests.exceptions.RequestException as err:
-        print('[*] Verify the link is correct \n', err)
-        exit(1)
+        exit(f'[*] Verify the link is correct\n {err}')
 
     try:
         split = urlparse(my_url)
