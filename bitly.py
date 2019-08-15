@@ -39,18 +39,10 @@ def create_parser():
     return args.url
 
 
-if __name__ == '__main__':
-
-    load_dotenv()
-    bitly_authorization = os.getenv("bitly_token")
+def main():
 
     if bitly_authorization is None:
-        print('[*]Sorry, something went wrong')
-        sys.exit()
-
-    headers = {
-        "Authorization": f"Bearer {bitly_authorization}"
-    }
+        sys.exit('[*]Sorry, something went wrong')
 
     my_url = create_parser()
 
@@ -75,3 +67,14 @@ if __name__ == '__main__':
         print("[*] Your shortened link:\n>>", link)
     else:
         print("\n[*] Number of clicks link:\n>>", count_clicks(following_links))
+
+
+if __name__ == '__main__':
+    load_dotenv()
+    bitly_authorization = os.getenv("BITLY_TOKEN")
+
+    headers = {
+        "Authorization": f"Bearer {bitly_authorization}"
+    }
+
+    main()
